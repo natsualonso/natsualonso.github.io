@@ -8,7 +8,7 @@ Esta pagina web ah sido creada como un proyecto desarrollado en el curso de esta
 ---
 
 ## <span style="color:blue">inferencia estadistica con R </span>
-[inferencia estadistica con R)](https://natsualonso.github.io/about.html)
+[inferencia estadistica con R](https://natsualonso.github.io/about.html)
 
 ---
 ---
