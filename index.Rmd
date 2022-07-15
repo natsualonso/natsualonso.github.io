@@ -4,22 +4,21 @@ title: "INTRODUCCION A ESTADISTICA CON R"
 
 Esta pagina web ah sido creada como un proyecto desarrollado en el curso de estadistica II, por alumnos de la carrera de ingenieria de sistemas, de la Universidad Nacional de San Cristobal de Huamanga
 
-## " "
-## " "
-## " "
+##.
+##.
+##.
 
-## inferencia estadistica con R
+### <span style="color:blue">inferencia estadistica con R </span>
 ingresar a la venta about
 
 
-## " "
-## " "
-## " "
-## " "
-## " "
-## " "
+##. 
+##.
+##.
+##. 
+##. 
+##. 
 
-
-## autores:
+### <span style="color:blue">autores:</span>
 #### Llamocca Vega Diego Alonso
 #### Roberto Isabello Lozano Espino
