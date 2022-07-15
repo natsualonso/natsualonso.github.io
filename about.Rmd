@@ -1,5 +1,155 @@
 ---
-title: "About This Website"
+title: "Inferencia Estadística con R"
 ---
 
-Aqui informacion sobre mi pagina web.
+
+
+## Inferencias sobre la media en distribuciones normales t.test
+La función *t.test()* es la encargada de los procedimientos de inferencia sobre la media en poblaciones normales. Mediante esta función:
+Podemos construir intervalos de confianza para una media y para la diferencia de medias entre dos poblaciones.
+
+-   Podemos llevar a cabo contrastes de hipótesis, tanto unilaterales como bilaterales, sobre una media o sobre la diferencia de medias entre dos poblaciones.
+
+-   En el caso particular de la comparación de dos poblaciones, permite elegir entre considerar las varianzas poblacionales iguales o distintas.
+
+Veamos algunos ejemplos. Utilizaremos para ello algunas bases de  datos incluídas en el paquete Lock5Data, que deberemos instalar previamente.
+
+### <span style="color:red">Inferencia sobre la media de una población normal</span>
+
+El conjunto de datos **SleepStudy** contiene 253 observaciones sobre patrones de sueño en estudiantes universitarios. Para ello se realizó un seguimiento de estos alumnos durante dos semanas. La variable AverageSleep contiene el número medio de horas de sueño de cada estudiante durante este periodo. En primer lugar leemos los datos y presentamos un histograma de esta variable:
+
+```{r}
+library(Lock5Data)  
+data(SleepStudy)    
+hist(SleepStudy$AverageSleep, col="skyblue", xlab="Promedio de horas de sueño diarias", main="Estudio del sueño en \n estudiantes universitarios")  
+```
+
+#### <span style="color:blue">Contraste bilateral</span>
+Supongamos que queremos determinar si es admisible la hipótesis de que estos alumnos duermen por término medio 8 horas diarias. Utilizaríamos entonces la sintaxis:
+```{r}
+t.test(SleepStudy$AverageSleep,  mu=8)
+```
+Obsérvese que para llevar a cabo el contraste basta con especificar la media que se desea poner a prueba mediante **mu=8**. Como resultado del procedimiento se muestra el valor del estadístico t, sus grados de libertad (df) y el **p-valor** del contraste **(0.57483)**, que indica que la hipótesis planteada es admisible. Además obtenemos también la estimación del número medio de horas de sueño en la muestra **(7.96593)** y un intervalo de confianza al **95%**. Podemos solicitar un intervalo a otro nivel de confianza especificándolo en la llamada al **t.test**:
+```{r}
+t.test(SleepStudy$AverageSleep,  mu=8, conf.level=0.9)
+```
+
+
+
+#### <span style="color:blue">Estructura del objeto *t.test*</span>
+
+Si ejecutamos:
+
+```{r}
+tt=t.test(SleepStudy$AverageSleep,  mu=8)
+str(tt)
+```
+Podemos comprobar que el resultado de realizar un t-test es un objeto de clase htest compuesto por una lista de elementos (statistic, parameter, etc). Ello facilita la extracción de elementos particulares del test; por ejemplo, si sólo estuviésemos interesados en el intervalo de confianza o el *p-valor* bastaría ejecutar:
+```{r}
+tt$conf.int
+```
+```{r}
+tt$p.value
+```
+o de manera equivalente
+```{r}
+tt["conf.int"]
+```
+```{r}
+tt["p.value"]
+```
+
+
+#### <span style="color:blue">Contraste unilateral</span>
+
+Si nuestro planteamiento original hubiese sido determinar si existe evidencia suficiente de que estos estudiantes duermen en promedio más de 7 horas diarias, plantearíamos un test unilateral, especificando el sentido de la hipótesis alternativa a contrastar **(en este caso μ>7)**:
+
+```{r}
+t.test(SleepStudy$AverageSleep,  mu=7, alternative="greater")
+```
+
+### <span style="color:red">Validación de la hipótesis de normalidad</span>
+
+El paquete car proporciona la función qqPlot() que nos permite evaluar gráficamente si puede aceptarse la hipótesis de normalidad de una variable:
+
+```{r}
+library(car)
+```
+```{r}
+qqPlot(SleepStudy$AverageSleep)
+```
+En este caso se aprecia una ligera asimetría en la cola inferior de la distribución. No obstante, el test de Shapiro-Wilk permite aceptar la normalidad de esta variable:
+```{r}
+shapiro.test(SleepStudy$AverageSleep)
+```
+
+### <span style="color:red">Diferencia de medias en dos poblaciones normales independientes</span>
+Podemos utilizar *t.test()* para contrastar la igualdad de medias en poblaciones normales. Por defecto, la función *t.test()* asume que la variable sobre la que se realiza el contraste tiene distinta varianza en los grupos que se comparan.
+
+#### <span style="color:blue">Comparación de grupos con varianzas distintas</span>
+Para contrastar con los datos del estudio anterior si existen diferencias en el promedio de horas de sueño diarias entre hombres y mujeres, asumiendo varianzas distintas, empleamos la siguiente sintaxis:
+```{r}
+t.test(AverageSleep~Gender,data=SleepStudy)
+```
+Como vemos, no existen diferencias significativas entre sexos (p-valor 0.55854). El boxplot que mostramos a continuación muestra que efectivamente ambos grupos son muy similares:
+
+```{r}
+SleepStudy$Gender=factor(SleepStudy$Gender,levels=0:1,labels=c("Mujer","Hombre"))
+boxplot(AverageSleep~Gender,data=SleepStudy,
+        main="Promedio de horas de sueño diarias",col=c("red","yellow"))
+```
+Para validar la aplicación del test, comprobamos la normalidad en cada grupo:
+```{r}
+shapiro.test(SleepStudy$AverageSleep[SleepStudy$Gender=="Hombre"])
+```
+```{r}
+shapiro.test(SleepStudy$AverageSleep[SleepStudy$Gender=="Mujer"])
+```
+o, de una manera más sintética:
+```{r}
+aggregate(AverageSleep~Gender,data=SleepStudy, function(x) shapiro.test(x)$p.value)
+```
+
+#### <span style="color:blue">Sintaxis alternativa para el *t-test*</span>
+En el ejemplo anterior hemos realizado el *t-test*, describiendo la asignación de grupos mediante un objeto de clase *formula*. En general, una fórmula es un objeto descrito de la forma **y~x**. Cuando se emplea esta descripción es obligatorio además declarar el nombre del dataframe en que se encuentran los datos, tal como hemos hecho en nuestro ejemplo.
+
+En ocasiones no tenemos los datos estructurados en un dataframe que incluya una variable que define el grupo de pertenencia, sino que simplemente tenemos los datos en dos vectores distintos; en tal caso, para realizar el *t-test* bastará con indicar los nombres de los vectores cuyas medias se pretende comparar:
+```{r}
+chicos=c(7.55,8.57,8.49,7.56,7.38,8.85,7.82,8.13,6.77,7.88)
+chicas=c(8.34,7.26,6.95,7.92,7.51,7.58,7.24,7.62,7.37,8.34)
+t.test(chicos,chicas)
+```
+
+#### <span style="color:blue">Comparación de grupos con varianzas iguales</span>
+En caso de que queramos especificar que las varianzas son iguales, utilizaríamos la opción var.*equal=TRUE:*
+```{r}
+t.test(AverageSleep~Gender,data=SleepStudy, var.equal=TRUE)
+```
+
+
+#### <span style="color:blue">Especificación de una hipótesis alternativa unilateral.</span>
+En los ejemplos anteriores se contrasta si dos poblaciones difieren o no en media. Mediante *t.test* es posible especificar una alternativa unilateral.
+
+Como ejemplo, analicemos los datos del conjunto FatMice18. Este dataframe corresponde a un experimento realizado para evaluar si la exposición de ratones a un número elevado de horas de luz influye en su ganancia de peso. El dataframe contieneddos variables medidas en 18 ratones:
+
+-   *Light*: es un factor con dos niveles: LD (condiciones normales de luz) y LL (Luz de día y de noche)
+-   *WgtGain4*: Ganancia de peso en gramos tras cuatro semanas sometidos a las condiciones experimentales.
+
+POdemos ver los datos:
+```{r}
+data(FatMice18)
+FatMice18
+```
+
+Si observamos la estructura del factor Light:
+```{r}
+str(FatMice18$Light)
+```
+observamos que es un factor, con “LD” como primer nivel y “LL” como segundo. Es importante determinar el orden en que están codificados los niveles, ya que al aplicar el *t-test*, el primer grupo será el que corresponda al primer nivel del factor y el segundo grupo al otro. Para contrastar si los datos encierran evidencia suficiente de que la exposición a más horas de luz se asocia con un mayor incremento de peso planteamos el t-test de la forma:
+```{r}
+t.test(WgtGain4~Light,data=FatMice18,alternative="less")
+```
+(la hipótesis alternativa especificada es que los ratones en condiciones de luz normales ganan menos peso que en condiciones de luminosidad extendida). Como el *p-valor* es **1.091810^{-4}** podemos asegurar que efectivamente a más luz mayor incremento de peso. Gráficamente:
+```{r}
+boxplot(WgtGain4~Light,data=FatMice18,col=c("brown3","brown"))
+```

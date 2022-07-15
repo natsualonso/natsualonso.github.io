@@ -11,7 +11,7 @@
 
 
 
-<title>About This Website</title>
+<title>Inferencia Estadística con R</title>
 
 <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -263,12 +263,345 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">About This Website</h1>
+<h1 class="title toc-ignore">Inferencia Estadística con R</h1>
 
 </div>
 
 
-<p>Aqui informacion sobre mi pagina web.</p>
+<div id="inferencias-sobre-la-media-en-distribuciones-normales-t.test"
+class="section level2">
+<h2>Inferencias sobre la media en distribuciones normales t.test</h2>
+<p>La función <em>t.test()</em> es la encargada de los procedimientos de
+inferencia sobre la media en poblaciones normales. Mediante esta
+función: Podemos construir intervalos de confianza para una media y para
+la diferencia de medias entre dos poblaciones.</p>
+<ul>
+<li><p>Podemos llevar a cabo contrastes de hipótesis, tanto unilaterales
+como bilaterales, sobre una media o sobre la diferencia de medias entre
+dos poblaciones.</p></li>
+<li><p>En el caso particular de la comparación de dos poblaciones,
+permite elegir entre considerar las varianzas poblacionales iguales o
+distintas.</p></li>
+</ul>
+<p>Veamos algunos ejemplos. Utilizaremos para ello algunas bases de
+datos incluídas en el paquete Lock5Data, que deberemos instalar
+previamente.</p>
+<div id="inferencia-sobre-la-media-de-una-población-normal"
+class="section level3">
+<h3><span style="color:red">Inferencia sobre la media de una población
+normal</span></h3>
+<p>El conjunto de datos <strong>SleepStudy</strong> contiene 253
+observaciones sobre patrones de sueño en estudiantes universitarios.
+Para ello se realizó un seguimiento de estos alumnos durante dos
+semanas. La variable AverageSleep contiene el número medio de horas de
+sueño de cada estudiante durante este periodo. En primer lugar leemos
+los datos y presentamos un histograma de esta variable:</p>
+<pre class="r"><code>library(Lock5Data)  
+data(SleepStudy)    
+hist(SleepStudy$AverageSleep, col=&quot;skyblue&quot;, xlab=&quot;Promedio de horas de sueño diarias&quot;, main=&quot;Estudio del sueño en \n estudiantes universitarios&quot;)  </code></pre>
+<p><img src="about_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<div id="contraste-bilateral" class="section level4">
+<h4><span style="color:blue">Contraste bilateral</span></h4>
+<p>Supongamos que queremos determinar si es admisible la hipótesis de
+que estos alumnos duermen por término medio 8 horas diarias.
+Utilizaríamos entonces la sintaxis:</p>
+<pre class="r"><code>t.test(SleepStudy$AverageSleep,  mu=8)</code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  SleepStudy$AverageSleep
+## t = -0.56168, df = 252, p-value = 0.5748
+## alternative hypothesis: true mean is not equal to 8
+## 95 percent confidence interval:
+##  7.846466 8.085392
+## sample estimates:
+## mean of x 
+##  7.965929</code></pre>
+<p>Obsérvese que para llevar a cabo el contraste basta con especificar
+la media que se desea poner a prueba mediante <strong>mu=8</strong>.
+Como resultado del procedimiento se muestra el valor del estadístico t,
+sus grados de libertad (df) y el <strong>p-valor</strong> del contraste
+<strong>(0.57483)</strong>, que indica que la hipótesis planteada es
+admisible. Además obtenemos también la estimación del número medio de
+horas de sueño en la muestra <strong>(7.96593)</strong> y un intervalo
+de confianza al <strong>95%</strong>. Podemos solicitar un intervalo a
+otro nivel de confianza especificándolo en la llamada al
+<strong>t.test</strong>:</p>
+<pre class="r"><code>t.test(SleepStudy$AverageSleep,  mu=8, conf.level=0.9)</code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  SleepStudy$AverageSleep
+## t = -0.56168, df = 252, p-value = 0.5748
+## alternative hypothesis: true mean is not equal to 8
+## 90 percent confidence interval:
+##  7.865786 8.066072
+## sample estimates:
+## mean of x 
+##  7.965929</code></pre>
+</div>
+<div id="estructura-del-objeto-t.test" class="section level4">
+<h4><span style="color:blue">Estructura del objeto
+<em>t.test</em></span></h4>
+<p>Si ejecutamos:</p>
+<pre class="r"><code>tt=t.test(SleepStudy$AverageSleep,  mu=8)
+str(tt)</code></pre>
+<pre><code>## List of 10
+##  $ statistic  : Named num -0.562
+##   ..- attr(*, &quot;names&quot;)= chr &quot;t&quot;
+##  $ parameter  : Named num 252
+##   ..- attr(*, &quot;names&quot;)= chr &quot;df&quot;
+##  $ p.value    : num 0.575
+##  $ conf.int   : num [1:2] 7.85 8.09
+##   ..- attr(*, &quot;conf.level&quot;)= num 0.95
+##  $ estimate   : Named num 7.97
+##   ..- attr(*, &quot;names&quot;)= chr &quot;mean of x&quot;
+##  $ null.value : Named num 8
+##   ..- attr(*, &quot;names&quot;)= chr &quot;mean&quot;
+##  $ stderr     : num 0.0607
+##  $ alternative: chr &quot;two.sided&quot;
+##  $ method     : chr &quot;One Sample t-test&quot;
+##  $ data.name  : chr &quot;SleepStudy$AverageSleep&quot;
+##  - attr(*, &quot;class&quot;)= chr &quot;htest&quot;</code></pre>
+<p>Podemos comprobar que el resultado de realizar un t-test es un objeto
+de clase htest compuesto por una lista de elementos (statistic,
+parameter, etc). Ello facilita la extracción de elementos particulares
+del test; por ejemplo, si sólo estuviésemos interesados en el intervalo
+de confianza o el <em>p-valor</em> bastaría ejecutar:</p>
+<pre class="r"><code>tt$conf.int</code></pre>
+<pre><code>## [1] 7.846466 8.085392
+## attr(,&quot;conf.level&quot;)
+## [1] 0.95</code></pre>
+<pre class="r"><code>tt$p.value</code></pre>
+<pre><code>## [1] 0.5748307</code></pre>
+<p>o de manera equivalente</p>
+<pre class="r"><code>tt[&quot;conf.int&quot;]</code></pre>
+<pre><code>## $conf.int
+## [1] 7.846466 8.085392
+## attr(,&quot;conf.level&quot;)
+## [1] 0.95</code></pre>
+<pre class="r"><code>tt[&quot;p.value&quot;]</code></pre>
+<pre><code>## $p.value
+## [1] 0.5748307</code></pre>
+</div>
+<div id="contraste-unilateral" class="section level4">
+<h4><span style="color:blue">Contraste unilateral</span></h4>
+<p>Si nuestro planteamiento original hubiese sido determinar si existe
+evidencia suficiente de que estos estudiantes duermen en promedio más de
+7 horas diarias, plantearíamos un test unilateral, especificando el
+sentido de la hipótesis alternativa a contrastar <strong>(en este caso
+μ&gt;7)</strong>:</p>
+<pre class="r"><code>t.test(SleepStudy$AverageSleep,  mu=7, alternative=&quot;greater&quot;)</code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  SleepStudy$AverageSleep
+## t = 15.924, df = 252, p-value &lt; 2.2e-16
+## alternative hypothesis: true mean is greater than 7
+## 95 percent confidence interval:
+##  7.865786      Inf
+## sample estimates:
+## mean of x 
+##  7.965929</code></pre>
+</div>
+</div>
+<div id="validación-de-la-hipótesis-de-normalidad"
+class="section level3">
+<h3><span style="color:red">Validación de la hipótesis de
+normalidad</span></h3>
+<p>El paquete car proporciona la función qqPlot() que nos permite
+evaluar gráficamente si puede aceptarse la hipótesis de normalidad de
+una variable:</p>
+<pre class="r"><code>library(car)</code></pre>
+<pre class="r"><code>qqPlot(SleepStudy$AverageSleep)</code></pre>
+<p><img src="about_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre><code>## [1] 85  3</code></pre>
+<p>En este caso se aprecia una ligera asimetría en la cola inferior de
+la distribución. No obstante, el test de Shapiro-Wilk permite aceptar la
+normalidad de esta variable:</p>
+<pre class="r"><code>shapiro.test(SleepStudy$AverageSleep)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  SleepStudy$AverageSleep
+## W = 0.99044, p-value = 0.0959</code></pre>
+</div>
+<div
+id="diferencia-de-medias-en-dos-poblaciones-normales-independientes"
+class="section level3">
+<h3><span style="color:red">Diferencia de medias en dos poblaciones
+normales independientes</span></h3>
+<p>Podemos utilizar <em>t.test()</em> para contrastar la igualdad de
+medias en poblaciones normales. Por defecto, la función
+<em>t.test()</em> asume que la variable sobre la que se realiza el
+contraste tiene distinta varianza en los grupos que se comparan.</p>
+<div id="comparación-de-grupos-con-varianzas-distintas"
+class="section level4">
+<h4><span style="color:blue">Comparación de grupos con varianzas
+distintas</span></h4>
+<p>Para contrastar con los datos del estudio anterior si existen
+diferencias en el promedio de horas de sueño diarias entre hombres y
+mujeres, asumiendo varianzas distintas, empleamos la siguiente
+sintaxis:</p>
+<pre class="r"><code>t.test(AverageSleep~Gender,data=SleepStudy)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  AverageSleep by Gender
+## t = 0.58588, df = 227.08, p-value = 0.5585
+## alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0
+## 95 percent confidence interval:
+##  -0.1690510  0.3121168
+## sample estimates:
+## mean in group 0 mean in group 1 
+##        7.994768        7.923235</code></pre>
+<p>Como vemos, no existen diferencias significativas entre sexos
+(p-valor 0.55854). El boxplot que mostramos a continuación muestra que
+efectivamente ambos grupos son muy similares:</p>
+<pre class="r"><code>SleepStudy$Gender=factor(SleepStudy$Gender,levels=0:1,labels=c(&quot;Mujer&quot;,&quot;Hombre&quot;))
+boxplot(AverageSleep~Gender,data=SleepStudy,
+        main=&quot;Promedio de horas de sueño diarias&quot;,col=c(&quot;red&quot;,&quot;yellow&quot;))</code></pre>
+<p><img src="about_files/figure-html/unnamed-chunk-14-1.png" width="672" />
+Para validar la aplicación del test, comprobamos la normalidad en cada
+grupo:</p>
+<pre class="r"><code>shapiro.test(SleepStudy$AverageSleep[SleepStudy$Gender==&quot;Hombre&quot;])</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  SleepStudy$AverageSleep[SleepStudy$Gender == &quot;Hombre&quot;]
+## W = 0.98566, p-value = 0.3402</code></pre>
+<pre class="r"><code>shapiro.test(SleepStudy$AverageSleep[SleepStudy$Gender==&quot;Mujer&quot;])</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  SleepStudy$AverageSleep[SleepStudy$Gender == &quot;Mujer&quot;]
+## W = 0.98607, p-value = 0.1338</code></pre>
+<p>o, de una manera más sintética:</p>
+<pre class="r"><code>aggregate(AverageSleep~Gender,data=SleepStudy, function(x) shapiro.test(x)$p.value)</code></pre>
+<pre><code>##   Gender AverageSleep
+## 1  Mujer    0.1338498
+## 2 Hombre    0.3401863</code></pre>
+</div>
+<div id="sintaxis-alternativa-para-el-t-test" class="section level4">
+<h4><span style="color:blue">Sintaxis alternativa para el
+<em>t-test</em></span></h4>
+<p>En el ejemplo anterior hemos realizado el <em>t-test</em>,
+describiendo la asignación de grupos mediante un objeto de clase
+<em>formula</em>. En general, una fórmula es un objeto descrito de la
+forma <strong>y~x</strong>. Cuando se emplea esta descripción es
+obligatorio además declarar el nombre del dataframe en que se encuentran
+los datos, tal como hemos hecho en nuestro ejemplo.</p>
+<p>En ocasiones no tenemos los datos estructurados en un dataframe que
+incluya una variable que define el grupo de pertenencia, sino que
+simplemente tenemos los datos en dos vectores distintos; en tal caso,
+para realizar el <em>t-test</em> bastará con indicar los nombres de los
+vectores cuyas medias se pretende comparar:</p>
+<pre class="r"><code>chicos=c(7.55,8.57,8.49,7.56,7.38,8.85,7.82,8.13,6.77,7.88)
+chicas=c(8.34,7.26,6.95,7.92,7.51,7.58,7.24,7.62,7.37,8.34)
+t.test(chicos,chicas)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  chicos and chicas
+## t = 1.1642, df = 16.55, p-value = 0.2609
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -0.2342163  0.8082163
+## sample estimates:
+## mean of x mean of y 
+##     7.900     7.613</code></pre>
+</div>
+<div id="comparación-de-grupos-con-varianzas-iguales"
+class="section level4">
+<h4><span style="color:blue">Comparación de grupos con varianzas
+iguales</span></h4>
+<p>En caso de que queramos especificar que las varianzas son iguales,
+utilizaríamos la opción var.<em>equal=TRUE:</em></p>
+<pre class="r"><code>t.test(AverageSleep~Gender,data=SleepStudy, var.equal=TRUE)</code></pre>
+<pre><code>## 
+##  Two Sample t-test
+## 
+## data:  AverageSleep by Gender
+## t = 0.5777, df = 251, p-value = 0.564
+## alternative hypothesis: true difference in means between group Mujer and group Hombre is not equal to 0
+## 95 percent confidence interval:
+##  -0.1723318  0.3153976
+## sample estimates:
+##  mean in group Mujer mean in group Hombre 
+##             7.994768             7.923235</code></pre>
+</div>
+<div id="especificación-de-una-hipótesis-alternativa-unilateral."
+class="section level4">
+<h4><span style="color:blue">Especificación de una hipótesis alternativa
+unilateral.</span></h4>
+<p>En los ejemplos anteriores se contrasta si dos poblaciones difieren o
+no en media. Mediante <em>t.test</em> es posible especificar una
+alternativa unilateral.</p>
+<p>Como ejemplo, analicemos los datos del conjunto FatMice18. Este
+dataframe corresponde a un experimento realizado para evaluar si la
+exposición de ratones a un número elevado de horas de luz influye en su
+ganancia de peso. El dataframe contieneddos variables medidas en 18
+ratones:</p>
+<ul>
+<li><em>Light</em>: es un factor con dos niveles: LD (condiciones
+normales de luz) y LL (Luz de día y de noche)</li>
+<li><em>WgtGain4</em>: Ganancia de peso en gramos tras cuatro semanas
+sometidos a las condiciones experimentales.</li>
+</ul>
+<p>POdemos ver los datos:</p>
+<pre class="r"><code>data(FatMice18)
+FatMice18</code></pre>
+<pre><code>##    Light WgtGain4
+## 1     LL       10
+## 2     LL       10
+## 3     LL       11
+## 4     LL        9
+## 5     LL       12
+## 6     LL        9
+## 7     LL       11
+## 8     LL        9
+## 9     LL       17
+## 10    LD        5
+## 11    LD        6
+## 12    LD        7
+## 13    LD        8
+## 14    LD        3
+## 15    LD        8
+## 16    LD        6
+## 17    LD        6
+## 18    LD        4</code></pre>
+<p>Si observamos la estructura del factor Light:</p>
+<pre class="r"><code>str(FatMice18$Light)</code></pre>
+<pre><code>##  Factor w/ 2 levels &quot;LD&quot;,&quot;LL&quot;: 2 2 2 2 2 2 2 2 2 1 ...</code></pre>
+<p>observamos que es un factor, con “LD” como primer nivel y “LL” como
+segundo. Es importante determinar el orden en que están codificados los
+niveles, ya que al aplicar el <em>t-test</em>, el primer grupo será el
+que corresponda al primer nivel del factor y el segundo grupo al otro.
+Para contrastar si los datos encierran evidencia suficiente de que la
+exposición a más horas de luz se asocia con un mayor incremento de peso
+planteamos el t-test de la forma:</p>
+<pre class="r"><code>t.test(WgtGain4~Light,data=FatMice18,alternative=&quot;less&quot;)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  WgtGain4 by Light
+## t = -4.9394, df = 13.986, p-value = 0.0001092
+## alternative hypothesis: true difference in means between group LD and group LL is less than 0
+## 95 percent confidence interval:
+##       -Inf -3.216948
+## sample estimates:
+## mean in group LD mean in group LL 
+##         5.888889        10.888889</code></pre>
+<p>(la hipótesis alternativa especificada es que los ratones en
+condiciones de luz normales ganan menos peso que en condiciones de
+luminosidad extendida). Como el <em>p-valor</em> es
+<strong>1.091810^{-4}</strong> podemos asegurar que efectivamente a más
+luz mayor incremento de peso. Gráficamente:</p>
+<pre class="r"><code>boxplot(WgtGain4~Light,data=FatMice18,col=c(&quot;brown3&quot;,&quot;brown&quot;))</code></pre>
+<p><img src="about_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+</div>
+</div>
+</div>
 
 
 
