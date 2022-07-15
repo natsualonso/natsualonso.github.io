@@ -2,7 +2,9 @@
 title: "INTRODUCCION A ESTADISTICA CON R"
 ---
 
-Esta pagina web ah sido creada como un proyecto desarrollado en el curso de estadistica II, por alumnos de la carrera de ingenieria de sistemas, de la Universidad Nacional de San Cristobal de Huamanga
+## Esta pagina web ah sido creada como un proyecto desarrollado en el curso de estadistica II
+## por alumnos de la carrera de ingenieria de sistemas 
+## Universidad Nacional de San Cristobal de Huamanga
 
 ---
 ---
