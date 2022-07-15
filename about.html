@@ -598,11 +598,15 @@ luminosidad extendida). Como el <em>p-valor</em> es
 <strong>1.091810^{-4}</strong> podemos asegurar que efectivamente a más
 luz mayor incremento de peso. Gráficamente:</p>
 <pre class="r"><code>boxplot(WgtGain4~Light,data=FatMice18,col=c(&quot;brown3&quot;,&quot;brown&quot;))</code></pre>
-<p><img src="about_files/figure-html/unnamed-chunk-23-1.png" width="672" />
-### <span style="color:red">Diferencia de medias en poblaciones normales
-emparejadas</span> Para comparar las medias de dos poblaciones en un
-diseño emparejado podemos utilizar t.test() con la opción
-paired=TRUE.</p>
+<p><img src="about_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+</div>
+</div>
+<div id="diferencia-de-medias-en-poblaciones-normales-emparejadas"
+class="section level3">
+<h3><span style="color:red">Diferencia de medias en poblaciones normales
+emparejadas</span></h3>
+<p>Para comparar las medias de dos poblaciones en un diseño emparejado
+podemos utilizar t.test() con la opción paired=TRUE.</p>
 <p>A modo de ejemplo, cargamos los datos QuizPulse10 también del paquete
 Lock5Data. Este archivo contiene los datos de pulsaciones por minuto de
 un grupo de 10 estudiantes en dos situaciones: durante la asistencia a
@@ -641,7 +645,6 @@ factor que defina grupos a comparar sino que, de hecho, queremos
 comparar dos variables distintas. Como las variables se encuentran
 dentro del dataframe QuizPulse10, encapsulamos el comando t.test dentro
 de la función with para que R pueda acceder a los datos.</p>
-</div>
 <div id="potencia-del-t.test" class="section level4">
 <h4><span style="color:blue">Potencia del t.test</span></h4>
 <p>Dados el nivel de significación α de un test, la desviación típica de
