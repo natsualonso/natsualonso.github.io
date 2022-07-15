@@ -5,11 +5,12 @@ title: "INTRODUCCION A ESTADISTICA CON R"
 Esta pagina web ah sido creada como un proyecto desarrollado en el curso de estadistica II, por alumnos de la carrera de ingenieria de sistemas, de la Universidad Nacional de San Cristobal de Huamanga
 
 ---
+---
 
 ## <span style="color:blue">inferencia estadistica con R </span>
 [inferencia estadistica con R)](https://natsualonso.github.io/about.html)
 
-
+---
 ---
 
 ## <span style="color:blue">autores:</span>
