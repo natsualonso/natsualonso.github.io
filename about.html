@@ -894,18 +894,8 @@ implementado en el paquete PairedData, en la función var.test().</p>
 entre las varianzas del número de pulsaciones por minuto de estudiantes
 según que estén haciendo un examen o atendiendo a una clase</p>
 <pre class="r"><code>data(QuizPulse10)
-library(PairedData)</code></pre>
-<pre><code>## Loading required package: MASS</code></pre>
-<pre><code>## Loading required package: gld</code></pre>
-<pre><code>## Loading required package: mvtnorm</code></pre>
-<pre><code>## Loading required package: lattice</code></pre>
-<pre><code>## Loading required package: ggplot2</code></pre>
-<pre><code>## 
-## Attaching package: &#39;PairedData&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:base&#39;:
-## 
-##     summary</code></pre>
-<pre class="r"><code>with(QuizPulse10, var.test(Lecture,Quiz,paired=TRUE))</code></pre>
+library(PairedData)
+with(QuizPulse10, var.test(Lecture,Quiz,paired=TRUE))</code></pre>
 <pre><code>## 
 ##  F test to compare two variances
 ## 
