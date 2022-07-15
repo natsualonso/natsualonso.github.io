@@ -153,3 +153,129 @@ t.test(WgtGain4~Light,data=FatMice18,alternative="less")
 ```{r}
 boxplot(WgtGain4~Light,data=FatMice18,col=c("brown3","brown"))
 ```
+### <span style="color:red">Diferencia de medias en poblaciones normales emparejadas</span>
+Para comparar las medias de dos poblaciones en un diseño emparejado podemos utilizar t.test() con la opción paired=TRUE.
+
+A modo de ejemplo, cargamos los datos QuizPulse10 también del paquete Lock5Data. Este archivo contiene los datos de pulsaciones por minuto de un grupo de 10 estudiantes en dos situaciones: durante la asistencia a una clase y durante la realización de un examen:
+```{r}
+data(QuizPulse10)
+QuizPulse10
+```
+Para determinar si existen diferencias significativas en el número de pulsaciones por minuto en ambas situaciones utilizamos el t-test para muestras emparejadas:
+```{r}
+with(QuizPulse10,t.test(Quiz,Lecture,paired=TRUE))
+```
+NOTA: Obsérvese que en ese caso no podemos utilizar un objeto de clase formula para realizar la comparación, ya que no hay una variable factor que defina grupos a comparar sino que, de hecho, queremos comparar dos variables distintas. Como las variables se encuentran dentro del dataframe QuizPulse10, encapsulamos el comando t.test dentro de la función with para que R pueda acceder a los datos.
+
+#### <span style="color:blue">Potencia del t.test</span>
+Dados el nivel de significación α de un test, la desviación típica de la variable cuya media se contrasta, el tipo de test (una muestra, dos muestras independientes o dos muestras emparejadas) y la hipótesis alternativa (unilateral o bilateral), la función power.t.test() permite:
+
+Calcular la potencia del t-test para detectar una diferencia delta con un tamaño de muestra n prefijados.
+
+Calcular el tamaño de la muestra necesario para detectar una diferencia delta con una potencia prefijada.
+
+Calcular la diferencia máxima delta que es posible detectar con un tamaño de muestra n para una potencia específica.
+
+La función power.t.test recibe como argumentos los valores de delta, n y power, y devuelve como resultado aquél que se declare como NULL (o se deje de declarar en la llamada a la función). Los siguientes ejemplos aclaran el funcionamiento de esta función
+
+Ejemplos
+¿Cuál es la potencia alcanzada en el test de la sección anterior en que aceptamos que la diferencia observada de 2.7 pulsaciones por minuto no era significativa?
+```{r}
+sdif=with(QuizPulse10, sd(Quiz-Lecture))
+power.t.test(n=10, delta=2.7, sd=sdif, sig.level=0.05, alternative="two.sided")
+```
+. ¿De qué tamaño debería ser la muestra si queremos alcanzar una potencia del 85% para detectar una diferencia de 8 pulsaciones por minuto a favor de una de las dos condiciones experimentales?
+```{r}
+power.t.test(delta=8, power=0.85, sd=sdif, sig.level=0.05, alternative="one.sided")
+```
+Necesitamos, por tanto, una muestra de tamaño 15
+
+  . Cuál es la diferencia máxima en pulsaciones por minuto que es posible detectar con una muestra de tamaño 20 y una potencia del 90%?
+```{r}
+power.t.test(n=20, power=0.9, sd=sdif, sig.level=0.05, alternative="two.sided")
+```
+
+### <span style="color:red">El test de Wilcoxon-Mann-Whitney</span>
+El test de Wilcoxon-Mann-Whitney contrasta si dos muestras proceden de la misma distribución o si, por el contrario, una de ellas tiende a producir valores más altos que la otra. Suele utilizarse como alternativa no paramétrica al t-test, cuando no se dan las condiciones de normalidad en las variables. Para realizar este test en R se utiliza la función wilcox.test de sintaxis muy parecida al t.test. Podemos repetir los contrastes de la sección anterior, utilizando ahora el test de Wilcoxon-Mann-Whitney:
+```{r}
+wilcox.test(AverageSleep~Gender,data=SleepStudy)          
+# Muestras independientes
+```
+```{r}
+with(QuizPulse10,wilcox.test(Quiz,Lecture,paired=TRUE))   
+# Muestras emparejadas
+```
+
+Al igual que con el t-test podemos también especificar el sentido de la comparación. Por ejemplo, el dataframe HollywoodMovies2011 (también en el paquete Lock5Data) contiene datos relativos a la productura, ingresos, audiencias, etc, de 136 películas estrenadas en 2011. Queremos saber si estos datos muestran evidencia de que las grandes productoras generan más ingresos que las productoras independientes. La variable que codifica la productora es LeadStudio, y WorldGross es la variable que contiene los ingresos brutos obtenidos por la película. Una simple inspección de la variable LeadStudio nos muestra sus categorías:
+  
+```{r}
+data(HollywoodMovies2011)
+table(HollywoodMovies2011$LeadStudio)
+```
+Definimos una nueva variable Studio con los valores “independent” o “major” para indicar si la película ha sido producida por los grandes estudios o no:
+
+```{r}
+HollywoodMovies2011$Studio=ifelse(HollywoodMovies2011$LeadStudio=="Independent", "Independent", "Major")
+HollywoodMovies2011$Studio=factor(HollywoodMovies2011$Studio,levels=c("Major","Independent"))
+table(HollywoodMovies2011$Studio)
+```
+La introducción del comando factor tiene como objeto garantizar que R considera “Major” como primer nivel de la variable, e “Independent” como segundo.
+
+Ahora contrastamos si las “majors” han generado más ingresos que las independientes:
+```{r}
+wilcox.test(WorldGross~Studio,alternative="greater",data=HollywoodMovies2011)
+```
+El p-valor (1.2546210^{-5}) indica que efectivamente hay evidencia suficiente para asegurar que las “major” generan más dinero.
+
+Gráficamente:
+```{r}
+boxplot(WorldGross~Studio, data=HollywoodMovies2011)
+```
+
+### <span style="color:red">Inferencia sobre la varianza en poblaciones normales.</span>
+#### <span style="color:blue">Contraste sobre la varianza de una variable con distribución normal</span>
+En la instalación básica de R no hay ninguna función para contrastar el valor de la varianza de una variable con distribución normal, o para construir un intervalo de confianza. Es preciso cargar el paquete TeachingDemos, que sí incluye la función sigma.test()
+
+Ejemplo
+Estamos interesados en determinar si en el estudio del sueño citado más arriba puede admitirse que la varianza del número de horas de sueño diario de los estudiantes es igual a 1:
+```{r}
+library(TeachingDemos)
+sigma.test(SleepStudy$AverageSleep, sigma=1)
+```
+
+Por tanto puede admitirse dicha hipótesis (p-valor=0.44474). La función anterior nos proporciona además un intervalo de confianza al 95% para la varianza poblacional. Puede utilizarse la opción conf.level para especificar un nivel de confianza distinto
+
+#### <span style="color:blue">Cociente de varianzas de poblaciones normales independientes.</span>
+La función var.test(), del paquete stats (no es necesario cargarlo, se carga por defecto al arrancar R) lleva a cabo un F test para comparar las varianzas de dos poblaciones normales independientes. Al igual que el t.test en la llamada a esta función se pueden incluir las dos variables a comparar o una fórmula en la que se especifica la variable factor que define los grupos que se comparan.
+
+Ejemplo
+Queremos decidira partir de los datos del estudio del sueño anterior si existe evidencia, al 5% de significación, de que la varianza del número de horas de sueño es menor entre los estudiantes varones que entre las mujeres. Las varianzas muestrales son las siguientes
+
+```{r}
+aggregate(AverageSleep~Gender,SleepStudy,var)
+```
+Con la codificación de la variable Gender el primer nivel de esta variable es Mujer. Por tanto el contraste deseado se lleva a cabo mediante:
+```{r}
+var.test(AverageSleep~Gender,SleepStudy,alternative="greater")
+```
+El p-valor (0.21827) indica que aunque las mujeres presentan en la muestra más varianza que los hombres, la diferencia no es significativa.
+
+
+### <span style="color:red">Cociente de varianzas de poblaciones normales en muestras emparejadas.</span>
+Cuando se quiere comparar la varianza de muestras emparejadas puede utilizarse el test de Pitman-Morgan. En R este test se encuentra implementado en el paquete PairedData, en la función var.test().
+
+Ejemplo:
+Queremos contrastar si existen diferencias significativas entre las varianzas del número de pulsaciones por minuto de estudiantes según que estén haciendo un examen o atendiendo a una clase
+```{r}
+data(QuizPulse10)
+library(PairedData)
+with(QuizPulse10, var.test(Lecture,Quiz,paired=TRUE))
+```
+
+
+
+
+
+
+
+
